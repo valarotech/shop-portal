@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>ValaroBazaar</title>
+<meta name="description" content="Handwoven sarees, silver, sago foods and handicrafts from makers in Salem, Erode, Dharmapuri and nearby, with sarees from across India.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..700&family=Figtree:wght@400..700&family=Noto+Sans+Tamil:wght@400..700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="announce"><div class="wrap">Preview build. Products, prices and drawings are samples. Ordering opens when payments and courier rates are connected.</div></div>
+
+<header class="site">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Home"><span class="mark" data-mark>V</span><span data-brand>ValaroBazaar</span></a>
+    <div class="head-right">
+      <nav class="main" aria-label="Main">
+        <a href="#shop">Shop</a><a href="#shop" data-origin-link="Salem">Made in Salem</a><a href="#sell">Sell with us</a><a href="#policies">Policies</a><a href="#contact">Contact</a>
+      </nav>
+      <button class="cart-btn" id="open-cart" type="button" aria-label="Open cart">Cart <span class="count num" id="cart-count">0</span></button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow label"><span>Made in Salem</span><span class="ta" lang="ta">சேலத்தில் தயாரானது</span></p>
+        <h1>What Salem and nearby towns make, in one shop.</h1>
+        <p class="lead">Handwoven sarees, silver, sago foods and handicrafts from makers in Salem, Erode, Dharmapuri and around. Sarees from the rest of India sit alongside, kept clearly separate.</p>
+        <div class="cta-row">
+          <a class="btn gold" href="#shop" data-origin-link="Salem">Shop Made in Salem</a>
+          <a class="btn ghost" href="#shop" data-origin-link="all">Browse everything</a>
+        </div>
+      </div>
+      <figure class="kolam">
+        <svg id="kolam-art" viewBox="0 0 440 440" role="img" aria-label="A kolam pattern: a diamond of dots circled by overlapping rings"></svg>
+        <figcaption>Kolam, the rice-flour pattern drawn at doorsteps across Tamil Nadu.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <div class="facts"><div class="wrap">
+    <div><strong>Origin shown on every product</strong><span>The town where it was made, stated plainly.</span></div>
+    <div><strong>Local makers first</strong><span>Salem, Erode, Dharmapuri and nearby.</span></div>
+    <div><strong>Sarees from all over India</strong><span>Listed separately from Made in Salem.</span></div>
+    <div><strong>Ask before you buy</strong><span>WhatsApp replies within one business day.</span></div>
+  </div></div>
+
+  <section class="block" id="shop">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Shop</h2>
+        <p>Pick a category, then narrow by where it was made. These are sample listings used to test the layout.</p>
+      </div>
+
+      <div class="filters" role="group" aria-label="Filter products">
+        <div class="chips" id="chips"></div>
+        <div class="frow">
+          <div><label class="lab" for="f-origin">Made in</label><select id="f-origin"></select></div>
+          <div><label class="lab" for="f-fabric">Fabric or material</label><select id="f-fabric"></select></div>
+          <div><span class="lab" id="lab-colour">Colour</span><div class="swatches" id="swatches" role="group" aria-labelledby="lab-colour"></div></div>
+          <div><label class="lab" for="f-price">Up to <span class="num" id="price-out"></span></label><input type="range" id="f-price" min="100" step="100"></div>
+          <div><label class="lab" for="f-sort">Sort by</label>
+            <select id="f-sort"><option value="featured">Featured</option><option value="low">Price, low to high</option><option value="high">Price, high to low</option></select></div>
+        </div>
+      </div>
+
+      <div class="tiles" id="tiles" hidden></div>
+
+      <div class="result-line"><span id="result-count" aria-live="polite"></span><button class="link-btn" id="reset" type="button">Reset filters</button></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section class="story block" id="story">
+    <div class="wrap">
+      <div>
+        <p class="label muted">Made in Salem</p>
+        <h2 style="margin-top:10px">A label that has to be true.</h2>
+        <p class="lead">Salem, in western Tamil Nadu, is known for silk and cotton weaving, silver jewellery and sago. Erode, Dharmapuri and nearby towns add more makers. Every product shows the town where it was made. Only products made in Salem carry the Made in Salem badge.</p>
+        <div class="promise">
+          <strong>What we will and will not claim</strong>
+          <p class="muted">Words such as pure silk, handloom, GI tag or Silk Mark appear on a listing only when they are true and certified. We do not publish reviews or sales numbers we cannot show.</p>
+        </div>
+      </div>
+      <div class="lines">
+        <div><strong>Sarees</strong><span>Made in Salem is its own collection. Sarees from other parts of India are listed apart from it.</span></div>
+        <div><strong>Silver and jewellery</strong><span>Kolusu anklets and other silver pieces.</span></div>
+        <div><strong>Food</strong><span>Sago foods, turmeric and other regional staples.</span></div>
+        <div><strong>Handicrafts and home textiles</strong><span>Palm-leaf gifts, towels and more as makers join.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="sell">
+    <div class="wrap sell">
+      <div>
+        <h2>Make or sell in Salem, Erode or Dharmapuri?</h2>
+        <p class="lead">List your products on a portal built for makers in this region. Tell us what you make and we will contact you on WhatsApp.</p>
+        <ul>
+          <li>Your town is shown on every product you list.</li>
+          <li>We handle the storefront and customer questions.</li>
+          <li>Listing terms are shared on WhatsApp after we see your products.</li>
+        </ul>
+      </div>
+      <form class="formbox" id="sell-form" novalidate>
+        <div><label class="lab" for="sl-name">Your name or shop name</label><input id="sl-name" type="text" autocomplete="organization"></div>
+        <div class="two">
+          <div><label class="lab" for="sl-town">Town</label>
+            <select id="sl-town"><option>Salem</option><option>Erode</option><option>Dharmapuri</option><option>Another town nearby</option></select></div>
+          <div><label class="lab" for="sl-phone">Phone</label><input id="sl-phone" type="tel" autocomplete="tel"></div>
+        </div>
+        <div><label class="lab" for="sl-what">What do you make or sell?</label><textarea id="sl-what" placeholder="For example: silk sarees, silver anklets, sago papad"></textarea></div>
+        <p class="err" id="sl-err" aria-live="polite"></p>
+        <div id="sl-out"><button class="btn block" type="submit">Prepare my request</button></div>
+      </form>
+    </div>
+  </section>
+
+  <section class="block" id="order" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head"><h2>How an order works</h2><p>Questions first, payment second, so nobody buys a saree unseen.</p></div>
+      <ol class="steps">
+        <li><strong>Choose</strong><span>Pick a piece, or ask us for a video of it on WhatsApp.</span></li>
+        <li><strong>Check delivery</strong><span>Enter your pin code to confirm we can ship to you.</span></li>
+        <li><strong>Pay</strong><span>UPI, cards or net banking for India. Cards or PayPal abroad.</span></li>
+        <li><strong>We pack</strong><span>Wrapped with care instructions and a thank-you card.</span></li>
+        <li><strong>Track</strong><span>A tracking link arrives by WhatsApp and email.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" id="policies" style="padding-top:0">
+    <div class="wrap policies">
+      <div>
+        <h2>Policies</h2>
+        <p class="muted" style="margin:14px 0 24px;max-width:46ch">Plain-language drafts. Each one gets checked with a chartered accountant or lawyer before launch.</p>
+        <details>
+          <summary>Shipping</summary>
+          <div class="body"><span class="draft">Draft</span>
+            <p>The dispatch time is on every product page. Shipping within India is charged by weight and zone, and we check your pin code before you pay.</p>
+            <p>Items from different makers may ship in separate parcels. International shipping opens in a later phase, with rates shown at checkout. A tracking link is sent by WhatsApp and email once your order ships.</p></div>
+        </details>
+        <details>
+          <summary>Returns and refunds</summary>
+          <div class="body"><span class="draft">Draft</span>
+            <p>Unused items with tags intact can be returned within <span class="todo">[X] days</span> of delivery. Custom stitching cannot be returned, and food items cannot be returned once opened.</p>
+            <p>Refunds go back to the original payment method. If an item arrives damaged, send us photos on WhatsApp and we will make it right.</p></div>
+        </details>
+        <details>
+          <summary>Privacy</summary>
+          <div class="body"><span class="draft">Draft</span>
+            <p>We collect your name, phone, email and address only to fulfil and support your order. We do not sell your details.</p>
+            <p>Payments are handled by the payment gateway. We never see or store your card number.</p></div>
+        </details>
+        <details>
+          <summary>Terms of sale</summary>
+          <div class="body"><span class="draft">Draft</span>
+            <p>Prices are in Indian rupees. Handmade goods vary slightly in weave and shade, and colours can look different on screen.</p>
+            <p>Each product page names the town where the item was made. Certification claims appear only where the item carries the certification.</p></div>
+        </details>
+      </div>
+      <div class="seller" id="contact">
+        <h3>Seller information</h3>
+        <dl>
+          <dt>Operated by</dt><dd data-operator>Valarotech</dd>
+          <dt>Legal name</dt><dd><span class="todo">[confirm registered name]</span></dd>
+          <dt>Address</dt><dd>Salem, Tamil Nadu, India <span class="todo">[full address]</span></dd>
+          <dt>GSTIN</dt><dd><span class="todo">[add after registration]</span></dd>
+          <dt>Grievance officer</dt><dd><span class="todo">[name and email]</span></dd>
+          <dt>Email</dt><dd><span class="todo">[support email]</span></dd>
+          <dt>WhatsApp</dt><dd><a data-wa="Hello, I have a question." href="https://wa.me/" target="_blank" rel="noopener">Message us</a></dd>
+        </dl>
+        <p class="note" style="margin-top:14px">India's Consumer Protection (E-Commerce) Rules, 2020 require the seller's legal name, address and a grievance officer to be shown. Fill the highlighted fields before launch.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div>
+      <a class="logo" href="#top"><span class="mark" data-mark>V</span><span data-brand>ValaroBazaar</span></a>
+      <p style="margin-top:12px;max-width:42ch">What Salem and nearby towns make, in one shop.</p>
+    </div>
+    <div><span class="label">Shop</span><ul><li><a href="#shop" data-origin-link="Salem">Made in Salem</a></li><li><a href="#shop" data-cat-link="sarees">Sarees</a></li><li><a href="#shop" data-cat-link="jewellery">Silver and jewellery</a></li><li><a href="#shop" data-cat-link="food">Food</a></li></ul></div>
+    <div><span class="label">Help</span><ul><li><a href="#sell">Sell with us</a></li><li><a href="#order">How it works</a></li><li><a href="#policies">Policies</a></li></ul></div>
+    <p class="fine">Operated by <span data-operator>Valarotech</span>. Salem, Tamil Nadu, India.</p>
+  </div>
+</footer>
+
+<a class="wa-float" data-wa="Hello, I have a question about your products." href="https://wa.me/" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.2 14.8l-.3-.2-2.4.6.6-2.3-.2-.3A8 8 0 0 1 12 4zm-3 3.5c-.3 0-.7.2-.9.6-.3.5-.5 1.1-.2 1.9.6 1.7 2.2 3.5 4 4.5 1.1.6 1.9.7 2.5.5.6-.2 1.2-.8 1.3-1.3.1-.3 0-.5-.2-.6l-1.5-.7c-.2-.1-.4 0-.5.1l-.6.7c-.1.1-.3.2-.5.1-.9-.4-1.7-1-2.3-1.9-.1-.2-.1-.3 0-.5l.4-.5c.1-.2.1-.3 0-.5l-.7-1.5c-.1-.2-.3-.3-.6-.3H9z"/></svg>
+  <span>Chat on WhatsApp</span>
+</a>
+
+<dialog class="drawer" id="cart-dlg" aria-labelledby="cart-title">
+  <div class="inner">
+    <div class="d-head"><h3 id="cart-title">Your cart</h3><button class="x" type="button" data-close aria-label="Close cart">&times;</button></div>
+    <div class="d-body" id="cart-body"></div>
+    <div class="d-foot" id="cart-foot"></div>
+  </div>
+</dialog>
+
+<dialog class="view" id="view-dlg" aria-labelledby="view-title">
+  <div class="close-row"><button class="x" type="button" data-close aria-label="Close">&times;</button></div>
+  <div class="grid2" id="view-body"></div>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="config.js"></script>
+<script src="products.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
