@@ -27,7 +27,6 @@
   /* Brand and contact settings */
   document.title = BRAND;
   $$("[data-brand]").forEach(function(el){ el.textContent = BRAND; });
-  $$("[data-mark]").forEach(function(el){ el.textContent = BRAND.charAt(0).toUpperCase(); });
   $$("[data-operator]").forEach(function(el){ if (SITE.operatedBy) el.textContent = SITE.operatedBy; });
   function waUrl(text){ return "https://wa.me/" + (SITE.whatsapp || "") + "?text=" + encodeURIComponent(text); }
   $$("[data-wa]").forEach(function(a){ a.href = waUrl(a.getAttribute("data-wa")); });
@@ -194,6 +193,40 @@
     var lines = cartItems().map(function(x){ return "- " + x.p.name + " (" + originLabel(x.p.town) + ") x " + x.q + " = " + INR.format(x.p.price * x.q); });
     return "Hello " + BRAND + ", I would like to order:\n" + lines.join("\n") + "\nItems total: " + INR.format(cartTotal()) + (extra ? "\n" + extra : "");
   }
+  var STATES = ["Andaman and Nicobar Islands","Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Ladakh","Lakshadweep","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Puducherry","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal"];
+  function shipFor(st){ return st === "Tamil Nadu" ? SITE.shipTN : SITE.shipOther; }
+  function totalsHtml(st){
+    return '<div class="sub"><span>Items total (incl. GST)</span><span class="num">' + INR.format(cartTotal()) + '</span></div>' +
+      '<div class="sub"><span>Shipping</span><span class="num" id="co-ship">' + INR.format(shipFor(st)) + '</span></div>' +
+      '<div class="sub"><strong>Total</strong><strong class="num" id="co-total">' + INR.format(cartTotal() + shipFor(st)) + '</strong></div>';
+  }
+  document.addEventListener("change", function(e){
+    if (e.target && e.target.id === "co-state") { window.__shipState = e.target.value; $("#co-ship").textContent = INR.format(shipFor(e.target.value)); $("#co-total").textContent = INR.format(cartTotal() + shipFor(e.target.value)); }
+  });
+  var rzpP = null;
+  function loadRzp(){ if (window.Razorpay) return Promise.resolve(); if (!rzpP) rzpP = new Promise(function(ok, no){ var sc = document.createElement("script"); sc.src = "https://checkout.razorpay.com/v1/checkout.js"; sc.onload = ok; sc.onerror = function(){ rzpP = null; no(new Error("load")); }; document.head.appendChild(sc); }); return rzpP; }
+  function payOnline(f, err){
+    var btn = $("#co-submit"); btn.disabled = true; btn.textContent = "Please wait...";
+    var rzpReady = loadRzp();
+    var fail = function(m){ err.textContent = m; btn.disabled = false; btn.textContent = "Pay now"; };
+    fetch(SITE.SUPABASE_URL + "/functions/v1/shop-create-order", { method:"POST", headers:{ "Content-Type":"application/json", apikey:SITE.SUPABASE_ANON_KEY, Authorization:"Bearer " + SITE.SUPABASE_ANON_KEY },
+      body: JSON.stringify({ customer_name:f.name, customer_email:f.email, customer_mobile:f.phone, customer_state:f.state, customer_pincode:f.pin, customer_address:f.addr, items: cartItems().map(function(x){ return { id:x.p.id, qty:x.q }; }) }) })
+    .then(function(r){ return r.json().then(function(d){ return { ok:r.ok, status:r.status, d:d }; }); })
+    .then(function(res){
+      if (!res.ok) { fail(res.status === 409 ? "Online ordering is not open yet for one of these items. Please check back soon." : "We could not start the payment. Please check your details and try again."); return; }
+      return rzpReady.then(function(){
+        var rz = new window.Razorpay({ key:res.d.key_id, order_id:res.d.order_id, amount:res.d.amount, currency:"INR", name:"Valaro Enterprises", description:"Order from " + BRAND,
+          prefill:{ name:f.name, email:f.email, contact:f.phone },
+          handler:function(){
+            cart = {}; saveCart(); updateCount();
+            $("#cart-body").innerHTML = '<div class="done"><strong>Payment received. Thank you!</strong><p class="muted">Your tax invoice is on its way to ' + esc(f.email) + '. We will pack your parcel and send tracking details by email.</p></div>';
+            $("#cart-foot").innerHTML = '<button class="btn block" type="button" data-close>Continue shopping</button>';
+          },
+          modal:{ ondismiss:function(){ btn.disabled = false; btn.textContent = "Pay now"; } } });
+        rz.open();
+      });
+    }).catch(function(){ fail("Network problem. Please try again."); });
+  }
   function renderCart(mode){
     var items = cartItems(), body = $("#cart-body"), foot = $("#cart-foot");
     updateCount(); saveCart();
@@ -202,22 +235,24 @@
       foot.innerHTML = '<button class="btn ghost block" type="button" data-close>Keep browsing</button>'; return;
     }
     if (mode === "form") {
-      body.innerHTML = '<form class="form" id="co-form" novalidate><p class="note">Guest checkout. No account needed.</p>' +
+      var online = !!SITE.onlinePayment, st = window.__shipState || "Tamil Nadu";
+      var opts = STATES.map(function(x){ return '<option' + (x === st ? ' selected' : '') + '>' + x + '</option>'; }).join("");
+      body.innerHTML = '<form class="form" id="co-form" novalidate><p class="note">Guest checkout. No account needed. We deliver within India.</p>' +
         '<div><label class="lab" for="co-name">Full name</label><input id="co-name" type="text" autocomplete="name"></div>' +
-        '<div class="two"><div><label class="lab" for="co-phone">Phone</label><input id="co-phone" type="tel" autocomplete="tel"></div>' +
-        '<div><label class="lab" for="co-pin">Pin code or postcode</label><input id="co-pin" type="text" autocomplete="postal-code"></div></div>' +
-        '<div><label class="lab" for="co-country">Country</label><select id="co-country"><option>India</option><option>Singapore</option><option>Malaysia</option><option>United Arab Emirates</option><option>United Kingdom</option><option>United States</option><option>Canada</option><option>Australia</option><option>Other</option></select></div>' +
+        '<div><label class="lab" for="co-email">Email (invoice is sent here)</label><input id="co-email" type="email" autocomplete="email"></div>' +
+        '<div class="two"><div><label class="lab" for="co-phone">Mobile (10 digits)</label><input id="co-phone" type="tel" autocomplete="tel-national"></div>' +
+        '<div><label class="lab" for="co-pin">Pin code</label><input id="co-pin" type="text" inputmode="numeric" autocomplete="postal-code"></div></div>' +
+        '<div><label class="lab" for="co-state">State</label><select id="co-state">' + opts + '</select></div>' +
         '<div><label class="lab" for="co-addr">Delivery address</label><textarea id="co-addr" autocomplete="street-address"></textarea></div>' +
         '<p class="err" id="co-err" aria-live="polite"></p></form>';
-      foot.innerHTML = '<div class="sub"><span>Items total</span><span class="num">' + INR.format(cartTotal()) + '</span></div>' +
-        '<button class="btn block" type="button" id="co-submit">Prepare my order</button><button class="btn ghost block" type="button" id="co-back">Back to cart</button>'; return;
+      foot.innerHTML = totalsHtml(st) + (online ? '<button class="btn block" type="button" id="co-submit">Pay now</button>' : '<button class="btn block" type="button" id="co-submit">Prepare my order</button>') + '<button class="btn ghost block" type="button" id="co-back">Back to cart</button>'; return;
     }
     body.innerHTML = items.map(function(x){
       return '<div class="line-item"><div class="th">' + pic(x.p) + '</div><div><div class="nm">' + esc(x.p.name) + '</div><div class="qty"><button type="button" data-dec="' + x.p.id + '" aria-label="Fewer">&minus;</button><output class="num">' + x.q + '</output><button type="button" data-inc="' + x.p.id + '" aria-label="More">+</button></div></div>' +
         '<div style="text-align:right"><div class="num" style="font-weight:600">' + INR.format(x.p.price * x.q) + '</div><button class="link-btn note" type="button" data-rm="' + x.p.id + '">Remove</button></div></div>';
     }).join("");
     foot.innerHTML = '<div class="sub"><span>Items total</span><span class="num">' + INR.format(cartTotal()) + '</span></div>' +
-      '<p class="note">Shipping is worked out from your pin code and the parcel weight once courier rates are set up.</p>' +
+      '<p class="note">Prices include GST. Shipping: ' + INR.format(SITE.shipTN) + ' in Tamil Nadu, ' + INR.format(SITE.shipOther) + ' to other states.</p>' +
       '<button class="btn block" type="button" id="go-form">Checkout as guest</button>';
   }
   function addToCart(id){ cart[id] = (cart[id] || 0) + 1; renderCart(); toast("Added to cart"); }
@@ -236,15 +271,16 @@
   $("#open-cart").addEventListener("click", function(){ renderCart(); openDlg($("#cart-dlg")); });
 
   function submitCheckout(){
-    var name = $("#co-name").value.trim(), phone = $("#co-phone").value.replace(/[\s\-+]/g, ""), pin = $("#co-pin").value.trim(),
-        country = $("#co-country").value, addr = $("#co-addr").value.trim(), err = $("#co-err");
-    if (!name) { err.textContent = "Enter your full name."; return; }
-    if (!/^[0-9]{8,14}$/.test(phone)) { err.textContent = "Enter a phone number with 8 to 14 digits."; return; }
-    if (country === "India" && !/^[1-9][0-9]{5}$/.test(pin)) { err.textContent = "Enter a valid 6-digit Indian pin code."; return; }
-    if (!pin) { err.textContent = "Enter your postcode."; return; }
-    if (addr.length < 8) { err.textContent = "Enter your full delivery address."; return; }
-    var msg = orderText("Name: " + name + "\nPhone: " + phone + "\nDeliver to: " + addr + ", " + pin + ", " + country);
-    $("#cart-body").innerHTML = '<div class="done"><strong>Your order request is ready.</strong><p class="muted">Online payment is not switched on yet. Send this request to us on WhatsApp and we will confirm the shipping charge, delivery time and payment link there.</p>' +
+    var f = { name:$("#co-name").value.trim(), email:$("#co-email").value.trim(), phone:$("#co-phone").value.replace(/[\s\-]/g, "").replace(/^(\+91|91|0)(?=[6-9][0-9]{9}$)/, ""), pin:$("#co-pin").value.trim(), state:$("#co-state").value, addr:$("#co-addr").value.trim() }, err = $("#co-err");
+    if (f.name.length < 2) { err.textContent = "Enter your full name."; return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email)) { err.textContent = "Enter a valid email. Your invoice is sent there."; return; }
+    if (!/^[6-9][0-9]{9}$/.test(f.phone)) { err.textContent = "Enter a 10-digit Indian mobile number."; return; }
+    if (!/^[1-9][0-9]{5}$/.test(f.pin)) { err.textContent = "Enter a valid 6-digit pin code."; return; }
+    if (f.addr.length < 8) { err.textContent = "Enter your full delivery address."; return; }
+    err.textContent = "";
+    if (SITE.onlinePayment) { payOnline(f, err); return; }
+    var msg = orderText("Name: " + f.name + "\nEmail: " + f.email + "\nPhone: " + f.phone + "\nDeliver to: " + f.addr + ", " + f.state + " - " + f.pin);
+    $("#cart-body").innerHTML = '<div class="done"><strong>Your order request is ready.</strong><p class="muted">Online payment is not switched on yet. Send this request to us on WhatsApp and we will confirm the payment link there.</p>' +
       '<a class="btn wa block" target="_blank" rel="noopener" href="' + waUrl(msg) + '">Send order request on WhatsApp</a></div>';
     $("#cart-foot").innerHTML = '<button class="btn ghost block" type="button" id="co-back">Back to cart</button>';
   }

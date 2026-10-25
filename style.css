@@ -252,3 +252,5 @@ dialog.view{margin:auto;width:min(900px,calc(100vw - 24px));max-height:calc(100d
   nav.main a{white-space:nowrap}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+.mark-img{width:36px;height:36px;border-radius:10px;display:inline-block;vertical-align:middle;margin-right:8px;object-fit:cover}
